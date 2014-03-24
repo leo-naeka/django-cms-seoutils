@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import re
 from collections import OrderedDict
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site
 from django.utils.translation import override
 
@@ -49,7 +50,10 @@ def get_alternate(page, protocol=None, enable_redirectors=None):
             assert sitemap_languages[0] != LANG_REDIRECTOR
         else:
             with override(lang):
-                url = page.get_absolute_url(language=lang, fallback=False)
+                try:
+                    url = page.get_absolute_url(language=lang, fallback=False)
+                except ObjectDoesNotExist:
+                    url = page.get_absolute_url(language=lang)
         alt_links[lang] = {'language_code': lang,
                            'location': '%s://%s%s' % (protocol,
                                                       site.domain,
