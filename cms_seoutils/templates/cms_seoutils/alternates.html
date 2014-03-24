@@ -1,0 +1,2 @@
+{% for alternate in alternates %}<link rel="alternate" hreflang="{{ alternate.language_code }}" href="{{ alternate.location }}" />{% if not forloop.last %}
+{% endif %}{% endfor %}

@@ -10,27 +10,20 @@ from cms.utils.i18n import (get_public_languages, get_fallback_languages,
                             hide_untranslated)
 from .config import get_config_redirectors
 
+
 LANG_REDIRECTOR = 'x-default'
 
 
-def get_alternate(page, site=None, site_languages=None, protocol=None,
-                  enable_redirectors=None):
+def get_alternate(page, protocol=None, enable_redirectors=None):
     # Optimize for repeated calls within the same site
-    if site is None:
-        site = Site.objects.get_current()
-    if site_languages is None:
-        site_languages = get_public_languages(site.pk)
+    site = Site.objects.get_current()
+    site_languages = get_public_languages(site.pk)
+    sitemap_languages = page.get_languages()
     # TODO: build API for this default
     if enable_redirectors is None:
        enable_redirectors = get_config_redirectors()
 
     protocol = protocol if protocol is not None else 'http'
-
-    # find all public translations for this page
-    available_languages = {l for l in page.get_languages()
-                           if l in site_languages}
-    sitemap_languages = [l for l in site_languages
-                         if l in available_languages]
 
     # handle case when hide_untranslated = False
     if len(sitemap_languages) < len(site_languages):
@@ -56,7 +49,7 @@ def get_alternate(page, site=None, site_languages=None, protocol=None,
             assert sitemap_languages[0] != LANG_REDIRECTOR
         else:
             with override(lang):
-                url = page.get_absolute_url()
+                url = page.get_absolute_url(language=lang, fallback=False)
         alt_links[lang] = {'language_code': lang,
                            'location': '%s://%s%s' % (protocol,
                                                       site.domain,

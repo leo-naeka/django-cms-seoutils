@@ -5,25 +5,22 @@ PROJECT_DIR = os.path.dirname(__file__)
 SECRET_KEY = 'x' * 20
 
 INSTALLED_APPS = (
+    'djangocms_admin_style',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django.contrib.sites',
     'cms_seoutils',  # BEFORE sitemaps
     'django.contrib.sitemaps',
+    'django.contrib.staticfiles',
+    'django.contrib.messages',
     'cms',
     'mptt',
     'menus',
     'south',
     'sekizai',
-    'cms.plugins.file',
-    'cms.plugins.picture',
-    'cms.plugins.video',
-    'cms.plugins.link',
-    'django.contrib.redirects',
+    'reversion',
 )
 
 gettext = lambda x: x

@@ -36,14 +36,16 @@ class TemplatetagsTestCase(SEOUtilsTestCase):
               'hreflang': 'it'}])
 
     def test_one_page_en_it(self):
+        from cms.models import Page
         page = self.create_page(language='en', template='page.html')
+        page = Page.objects.get(pk=page.pk)
         title = create_title('it', 'ciao', page)
         # unpublished
         elem = self.get_page(page, 'en')
         links = [e.attrib for e in elem.findall('head/link')]
         self.assertEqual(links, [])
         # publish title
-        publish_page(page, self.get_superuser())
+        publish_page(page, self.get_superuser(), 'it')
         # get en
         elem = self.get_page(page, 'en')
         links = [e.attrib for e in elem.findall('head/link')]

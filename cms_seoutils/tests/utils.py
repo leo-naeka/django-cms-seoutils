@@ -52,7 +52,7 @@ class SEOUtilsTestCase(CMSTestCase):
         page = create_page(**page_data)
         if published:
             user = self.get_superuser()
-            publish_page(page, user)
+            publish_page(page, user, language)
         return page
 
     def get_url(self, path, site=None):

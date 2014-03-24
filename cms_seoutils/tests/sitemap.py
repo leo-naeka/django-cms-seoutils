@@ -1,6 +1,7 @@
 from lxml import etree
 
 from cms.api import create_title, publish_page
+from cms.models import Page
 
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
@@ -27,7 +28,6 @@ class SitemapTestCase(SEOUtilsTestCase):
         self.assertFalse(list(elem))
 
     def test_one_page_en(self):
-        from cms.models import Page
         self.assertEqual(Page.objects.published().count(), 0)
         page = self.create_page(language='en')
         elem = self.get_sitemap()
@@ -44,9 +44,6 @@ class SitemapTestCase(SEOUtilsTestCase):
         from cms.utils.conf import get_languages
         page = self.create_page(language='en')
         elem = self.get_sitemap()
-        self.assertEqual(len(list(elem)), 2)
-        self.assertEqual([e.text for e in elem.findall('{*}url/{*}loc')],
-                         [self.get_url('/en/'), self.get_url('/it/')])
         links = [e.attrib for e in elem.find('{*}url').findall('{*}link')]
         self.assertEquals(
             links,
@@ -64,12 +61,13 @@ class SitemapTestCase(SEOUtilsTestCase):
     def test_one_page_en_it(self):
         from cms.utils.conf import get_languages
         page = self.create_page(language='en')
+        page = Page.objects.get(pk=page.pk)
         title = create_title('it', 'ciao', page)
         # unpublished
         elem = self.get_sitemap()
         self.assertEqual(len(list(elem)), 1)
         # publish title
-        publish_page(page, self.get_superuser())
+        publish_page(page, self.get_superuser(), 'it')
         elem = self.get_sitemap()
         self.assertEqual(len(list(elem)), 2)
         self.assertEqual([self.get_url('/en/'), self.get_url('/it/')],
